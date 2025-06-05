@@ -46,7 +46,7 @@ jobs:
       # Uses the 'docker/metadata-action' to automatically generate Docker image tags and labels.
       # This ensures consistent and informative tagging.
       id: meta # Assigns an ID to this step so its outputs can be referenced later.
-      uses: docker/metadata-action@v5
+      uses: docker/metadata/action@v5
       with:
         images: ${{ env.DOCKER_FULL_IMAGE_NAME }} # Uses the full image name defined in env.
         tags: |
