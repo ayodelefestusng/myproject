@@ -30,11 +30,13 @@ SECRET_KEY = os.getenv('SECRET_KEY')
 
 # SECURITY WARNING: don't run with debug turned on in production!
 # DEBUG = True
-DEBUG = os.getenv('DEBUG') == "True"
+DEBUG = os.getenv('DEBUG', 'False') == "True"
+
+# DEBUG = os.environ.get('DJANGO_DEBUG', 'False') == 'True'
 
 # ALLOWED_HOSTS = []
 
-ALLOWED_HOSTS = os.getenv("ALLOWED_HOSTS", "").split(",")
+ALLOWED_HOSTS = os.getenv("ALLOWED_HOSTS", '127.0.0.1,localhost',"").split(",")
 
 
 # Application definition
@@ -142,11 +144,16 @@ from pathlib import Path
 
 # Static files (CSS, JavaScript, Images)
 STATIC_URL = '/static/'
-STATIC_ROOT = os.path.join(BASE_DIR, 'staticfiles')  # For collectstatic in production
+# STATIC_ROOT = os.path.join(BASE_DIR, 'staticfiles')  # For collectstatic in production
+STATIC_ROOT = os.path.join(BASE_DIR, 'static_root')
 STATICFILES_DIRS = [
     os.path.join(BASE_DIR, 'static'),
 ]
 
+
+# STATICFILES_DIRS = [
+#     os.path.join(BASE_DIR, 'myproject/static'), # Example: project-level static files
+# ]
 # Media files (User uploaded content)
 MEDIA_URL = '/media/'
 MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
