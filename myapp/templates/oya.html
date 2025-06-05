@@ -1,0 +1,60 @@
+{% extends 'base.html' %}
+
+{% block title %}Report{% endblock %}
+
+
+{% block content %}
+<table class="table caption-top">
+  <thead>
+    <tr>
+      <th scope="col">ID</th>
+      <th scope="col">Questionn</th>
+      <th scope="col">Answer</th>
+      <th scope="col">Sentiment </th>
+      <th scope="col">Tool</th>
+      <th scope="col">Ticket</th>
+      <th scope="col">Summary</th>
+      <th scope="col">Sentiment Summary</th>
+      <th scope="col">Time Stamp</th>
+    </tr>
+  </thead>
+  {% for i in insight %}
+  <tbody>
+    <tr>
+      <th scope="row">  {{ i.session_id }}</th>
+        <td>  {{ i.question }}</td>
+        <td>  {{ i.answer }}</td>
+        <td>  {{ i.sentimentAnswer }}</td>
+        <td>  {{ i.source }}</td>
+        <td>  {{ i.ticket }}</td>
+        <td>  {{ i.summary }}</td>
+        <td>  {{ i.sentiment }}</td>
+        <td>  {{ i.created_at }}</td>
+        
+     
+    </tr>
+    {% endfor %}
+  </tbody>
+</table>
+      
+
+{% endblock %}
+
+
+
+
+
+<body>
+ {% for i in insight %}
+    <h6>{{ i.session_id }}</h6>
+    <h6>{{ i.sentimentAnswer }}</h6>
+    <h6>{{ i.answer }}</h6>
+    <h6>{{ i.source }}</h6>
+    <h6>{{ i.ticket }}</h6>
+    <h6>{{ i.summary }}</h6>
+    <h6>{{ i.sentiment }}</h6>
+    <h6>{{ i.created_at }}</h6>
+    {% endfor %}
+    
+</body>
+</html>

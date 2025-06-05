@@ -1,0 +1,27 @@
+{% extends 'base.html' %}
+
+{% block title %}Conversation{% endblock %}
+
+{% block content %}
+<div class="row">
+    <div class="col-md-8 offset-md-2">
+        <h2 class="text-center mb-4">Conversation from {{ conversation.started_at|date }}</h2>
+        
+        <div class="mb-3">
+            <a href="{% url 'chat_history' %}" class="btn btn-secondary">Back to History</a>
+            <a href="{% url 'chat_home' %}" class="btn btn-primary">New Chat</a>
+        </div>
+        
+        <div style="border: 1px solid #ddd; border-radius: 5px; padding: 15px; background-color: #f9f9f9;">
+            {% for message in messages %}
+                <div class="mb-3">
+                    <strong>{% if message.is_user %}You{% else %}Bot{% endif %}:</strong>
+                    <p>{{ message.text }}</p>
+                    <small class="text-muted">{{ message.timestamp|timesince }} ago</small>
+                    <hr>
+                </div>
+            {% endfor %}
+        </div>
+    </div>
+</div>
+{% endblock %}

@@ -1,0 +1,6 @@
+# For Docker 
+
+
+# Ensure these volumes exist
+VOLUME /app/media
+VOLUME /app/staticfiles

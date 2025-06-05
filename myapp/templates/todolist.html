@@ -1,0 +1,66 @@
+{% extends "base.html" %}
+
+
+{% block title %}
+<title> {{Title}} </title>
+{% endblock title %}
+
+
+
+
+{% block content %}
+
+{% for i in messages %}
+<div class="alert alert-info" role="alert">
+  <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+  
+  {{ i  }}
+</div>
+
+{% endfor %}
+</div>
+
+<div class ='container'>
+    <h1>{{Naija}}</h1>
+        <form action="" method="post">
+            {% csrf_token %}
+          
+                <label for="text"> Add Task</label>
+                <input type="text"  name ='code' id = 'code'  class="form-control" placeholder="New Task">
+
+      
+            <button type="Submit" class="btn btn-primary">  Add Task</button>
+
+
+        </form>
+<table class="table caption-top">
+  <thead>
+    <tr>
+      <th scope="col">ID</th>
+      <th scope="col">Code</th>
+      <th scope="col">Gift</th>
+      <th scope="col">Status</th>
+    </tr>
+  </thead>
+  {% for i in ajero  %}
+  <tbody>
+    <tr>
+      <th scope="row">  {{i.id}}</th>
+      <td>  {{i.code}}</td>
+      <td>  {{i.gift}}</td>
+      <td>  {{i.Status}}</td>
+    </tr>
+    {% endfor %}
+  </tbody>
+</table>
+      
+
+ <h4>{{AjeroT2}}</h4>
+ {% for i in AjeroT2 %}
+{{ i.is_superuser}}
+   
+ {% endfor %}
+
+
+    
+{% endblock content %}
