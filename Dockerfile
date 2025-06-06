@@ -20,6 +20,17 @@ RUN apt-get update && \
     apt-get install -y --no-install-recommends \
     build-essential \
     libpq-dev \
+    libgl1-mesa-glx \
+    libsm6 \
+    libxext6 \
+    libxrender1 \
+    libfontconfig1 \
+    libfreetype6 \
+    libjpeg-dev \
+    zlib1g-dev \
+    libportaudio2 \
+    portaudio19-dev \
+    libmupdf-dev \
     && rm -rf /var/lib/apt/lists/*
 
 # Install Python dependencies from requirements.txt.
