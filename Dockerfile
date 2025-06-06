@@ -15,6 +15,13 @@ WORKDIR /app
 # Docker won't re-run the pip install command.
 COPY requirements.txt /app/
 
+# Install system dependencies required for psycopg2-binary and other Python packages
+RUN apt-get update && \
+    apt-get install -y --no-install-recommends \
+    build-essential \
+    libpq-dev \
+    && rm -rf /var/lib/apt/lists/*
+
 # Install Python dependencies from requirements.txt.
 # --no-cache-dir: Prevents pip from storing downloaded packages in a cache,
 #                 reducing the final image size.
