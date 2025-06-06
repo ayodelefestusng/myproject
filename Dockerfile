@@ -1,10 +1,10 @@
 # Use a slim Python image as the base. This provides Python and a minimal Linux environment.
 # python:3.9-slim-buster is a good choice for smaller image sizes.
-FROM python:3.9-slim-buster
+FROM python:3.10-slim-buster
 
 # Set environment variables for Python to prevent buffering of stdout/stderr.
 # This makes logs from inside the container appear immediately in the console.
-ENV PYTHONUNBUFFERED 1
+ENV PYTHONUNBUFFERED=1
 
 # Set the working directory inside the container.
 # All subsequent commands will be executed relative to this directory.
