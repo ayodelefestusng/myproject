@@ -36,8 +36,7 @@ RUN apt-get update && \
 # Install Python dependencies from requirements.txt.
 # --no-cache-dir: Prevents pip from storing downloaded packages in a cache,
 #                 reducing the final image size.
-RUN pip install --no-cache-dir -r requirements.txt
-
+RUN pip install --no-cache-dir --verbose -r requirements.txt
 # Copy the entire Django project into the container's /app directory.
 # This copies manage.py, myproject/, myapp/, etc.
 # Note: This is done after installing dependencies to again leverage build cache.
