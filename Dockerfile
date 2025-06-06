@@ -1,59 +1,72 @@
-# Use a slim Python image as the base. This provides Python and a minimal Linux environment.
-# python:3.9-slim-buster is a good choice for smaller image sizes.
-FROM python:3.11-slim-buster 
+# Stage 1: Builder
+FROM python:3.11-slim-bullseye AS builder
 
-# Set environment variables for Python to prevent buffering of stdout/stderr.
-# This makes logs from inside the container appear immediately in the console.
-ENV PYTHONUNBUFFERED=1
-
-# Set the working directory inside the container.
-# All subsequent commands will be executed relative to this directory.
 WORKDIR /app
 
-# Copy the requirements.txt file into the container's /app directory.
-# This step is done early to leverage Docker's build cache. If only requirements.txt changes,
-# Docker won't re-run the pip install command.
-COPY requirements.txt /app/
-
-# Install system dependencies required for psycopg2-binary and other Python packages
+# Install system dependencies
 RUN apt-get update && \
     apt-get install -y --no-install-recommends \
     build-essential \
     libpq-dev \
-    libgl1-mesa-glx \
-    libsm6 \
-    libxext6 \
-    libxrender1 \
-    libfontconfig1 \
-    libfreetype6 \
-    libjpeg-dev \
-    zlib1g-dev \
-    libportaudio2 \
-    portaudio19-dev \
-    libmupdf-dev \
     && rm -rf /var/lib/apt/lists/*
 
-# Install Python dependencies from requirements.txt.
-# --no-cache-dir: Prevents pip from storing downloaded packages in a cache,
-#                 reducing the final image size.
-RUN pip install --no-cache-dir --verbose -r requirements.txt
-# Copy the entire Django project into the container's /app directory.
-# This copies manage.py, myproject/, myapp/, etc.
-# Note: This is done after installing dependencies to again leverage build cache.
-COPY . /app/
+# Create virtual environment
+RUN python -m venv /opt/venv
+ENV PATH="/opt/venv/bin:$PATH"
 
-# Collect static files into the STATIC_ROOT directory defined in settings.py.
-# --noinput: Prevents prompts during the collection process (e.g., "Are you sure?").
-# This is crucial for serving static assets correctly in production.
-RUN python manage.py collectstatic --noinput
+# Install Python dependencies
+COPY requirements.txt .
+RUN pip install --no-cache-dir --upgrade pip && \
+    pip install --no-cache-dir -r requirements.txt
 
-# Expose port 8000. This informs Docker that the container listens on this port at runtime.
-# It doesn't actually publish the port; it's more for documentation and networking configuration.
+# Stage 2: Runtime
+FROM python:3.11-slim-bullseye
+
+WORKDIR /app
+
+# Install runtime dependencies
+RUN apt-get update && \
+    apt-get install -y --no-install-recommends \
+    libpq5 \
+    && rm -rf /var/lib/apt/lists/*
+
+# Copy virtual environment
+COPY --from=builder /opt/venv /opt/venv
+ENV PATH="/opt/venv/bin:$PATH"
+
+# Create non-root user
+RUN useradd -m appuser && \
+    mkdir -p /app/static /app/media && \
+    chown -R appuser:appuser /app
+USER appuser
+
+# Copy application
+COPY --chown=appuser:appuser . .
+
+# Fix line endings and permissions
+RUN sed -i 's/\r$//' docker-entrypoint.sh && \
+    chmod +x docker-entrypoint.sh
+
+# Environment variables
+ENV PYTHONUNBUFFERED=1 \
+    PYTHONPATH=/app \
+    DJANGO_SETTINGS_MODULE=myproject.settings
+
+# Expose port
 EXPOSE 8000
 
-# Define the command to run when the container starts.
-# We're using Gunicorn (a Python WSGI HTTP Server) to serve the Django application.
-# "myproject.wsgi:application" refers to your Django project's WSGI application.
-# "--bind 0.0.0.0:8000": Binds Gunicorn to all network interfaces on port 8000 inside the container.
-# This makes the application accessible from outside the container.
-CMD ["gunicorn", "myproject.wsgi:application", "--bind", "0.0.0.0:8000"]
+# Health check
+HEALTHCHECK --interval=30s --timeout=10s --start-period=5s --retries=3 \
+    CMD curl -f http://localhost:8000/health/ || exit 1
+
+# Entrypoint
+ENTRYPOINT ["./docker-entrypoint.sh"]
+
+# Default command
+CMD ["gunicorn", "myproject.wsgi:application", \
+    "--bind", "0.0.0.0:8000", \
+    "--workers", "4", \
+    "--worker-class", "gthread", \
+    "--threads", "2", \
+    "--access-logfile", "-", \
+    "--error-logfile", "-"]
