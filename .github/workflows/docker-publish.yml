@@ -77,3 +77,4 @@ jobs:
         echo "Repository: ${{ env.DOCKER_FULL_IMAGE_NAME }}"
         echo "Tags applied: ${{ steps.meta.outputs.tags }}"
 # Retrying after secret check
+# Final attempt with new token
