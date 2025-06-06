@@ -81,8 +81,6 @@ OPENAI_API_KEY = os.getenv("OPENAI_API_KEY")
 PDF_PATH = os.getenv("PDF_PATH", "default.pdf")
 
 # Example usage
-print(f"Google API Key: {GOOGLE_API_KEY}")
-print(f"PDF Path: {PDF_PATH}")
 
 GOOGLE_API_KEY
 gemni = ChatGoogleGenerativeAI(
